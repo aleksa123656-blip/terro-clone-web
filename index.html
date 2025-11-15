@@ -17,12 +17,10 @@
 
   <script>
     Telegram.WebApp.ready();
-
     const products = [
-      { id:1, name:"Tora Bomber", price:8890, img:"https://i.imgur.com/5eQe9dO.jpeg" },
-      { id:2, name:"Sang Hoodie", price:2990, img:"https://i.imgur.com/XyZ1234.jpeg" }
+      { id:1, name:"Dior Sauvage 100ml", price:8900, img:"https://i.imgur.com/abc123.jpg" },
+      { id:2, name:"Chanel No.5 50ml", price:12900, img:"https://i.imgur.com/def456.jpg" }
     ];
-
     const catalog = document.getElementById('catalog');
     products.forEach(p => {
       const div = document.createElement('div');
@@ -32,18 +30,15 @@
         <div class="info">
           <h3>${p.name}</h3>
           <p class="price">${p.price} ₽</p>
-          <button onclick="addToCart(${p.id})">В корзину</button>
+          <button onclick="add(${p.id})">В корзину</button>
         </div>
       `;
       catalog.appendChild(div);
     });
-
-    function addToCart(id) {
-      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const existing = cart.find(i => i.id === id);
-      if (existing) existing.qty++;
-      else cart.push({ id, qty:1 });
-      localStorage.setItem('cart', JSON.stringify(cart));
+    function add(id) {
+      let c = JSON.parse(localStorage.getItem('c')||'[]');
+      const i = c.find(x=>x.id==id); if(i) i.q++; else c.push({id,q:1});
+      localStorage.setItem('c',JSON.stringify(c));
       Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
   </script>

@@ -5,79 +5,40 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body { margin:0; background:#111; color:white; font-family:-apple-system; padding:10px; }
-    .item { display:flex; background:#222; margin:10px; border-radius:12px; padding:10px; align-items:center; }
-    .item img { width:60px; height:60px; border-radius:8px; margin-right:10px; }
-    .qty { display:flex; background:#333; border-radius:20px; padding:5px; margin-left:auto; }
-    .qty button { background:none; border:none; color:white; width:30px; }
-    .total { padding:20px; font-size:18px; }
-    .checkout { background:#007aff; color:white; padding:15px; text-align:center; border-radius:12px; margin:20px 10px; }
+    .i { display:flex; background:#222; margin:10px; border-radius:12px; padding:10px; align-items:center; }
+    .i img { width:60px; height:60px; border-radius:8px; margin-right:10px; }
+    .q { display:flex; background:#333; border-radius:20px; padding:5px; margin-left:auto; }
+    .q button { background:none; border:none; color:white; width:30px; }
+    .t { padding:20px; font-size:18px; }
+    .co { background:#007aff; color:white; padding:15px; text-align:center; border-radius:12px; margin:20px 10px; }
   </style>
 </head>
 <body>
   <div id="items"></div>
-  <div class="total" id="total">Итого: 0 ₽</div>
-  <div class="checkout" onclick="submitOrder()">Оформить заказ</div>
+  <div class="t" id="total">Итого: 0 ₽</div>
+  <div class="co" onclick="send()">Оформить заказ</div>
 
   <script>
     Telegram.WebApp.ready();
-
-    const products = {
-      1: { name:"Tora Bomber", price:8890 },
-      2: { name:"Sang Hoodie", price:2990 }
-    };
-
-    function render() {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const container = document.getElementById('items');
-      container.innerHTML = '';
-      let total = 0;
-
-      cart.forEach((item, i) => {
-        const p = products[item.id];
-        const sum = p.price * item.qty;
-        total += sum;
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `
-          <img src="https://i.imgur.com/${item.id === 1 ? '5eQe9dO' : 'XyZ1234'}.jpeg">
-          <div style="flex:1">
-            <div>${p.name}</div>
-            <div style="color:#aaa">${p.price} ₽ × ${item.qty}</div>
-          </div>
-          <div class="qty">
-            <button onclick="update(${i}, -1)">−</button>
-            <span>${item.qty}</span>
-            <button onclick="update(${i}, 1)">+</button>
-          </div>
-        `;
-        container.appendChild(div);
+    const p = {1:{n:"Dior Sauvage 100ml",pr:8900},2:{n:"Chanel No.5 50ml",pr:12900}};
+    function r() {
+      const c = JSON.parse(localStorage.getItem('c')||'[]');
+      const con = document.getElementById('items'); con.innerHTML='';
+      let tot=0;
+      c.forEach((it,i)=>{
+        const sum = p[it.id].pr * it.q; tot+=sum;
+        const d=document.createElement('div'); d.className='i';
+        d.innerHTML=`<img src="https://i.imgur.com/${it.id==1?'abc123':'def456'}.jpg">
+          <div style="flex:1"><div>${p[it.id].n}</div><div style="color:#aaa">${p[it.id].pr}₽ × ${it.q}</div></div>
+          <div class="q"><button onclick="u(${i},-1)">−</button><span>${it.q}</span><button onclick="u(${i},1)">+</button></div>`;
+        con.appendChild(d);
       });
-
-      document.getElementById('total').textContent = `Итого: ${total} ₽`;
+      document.getElementById('total').textContent=`Итого: ${tot} ₽`;
     }
-
-    window.update = (i, d) => {
-      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart[i].qty += d;
-      if (cart[i].qty <= 0) cart.splice(i, 1);
-      localStorage.setItem('cart', JSON.stringify(cart));
-      render();
-    };
-
-    window.submitOrder = () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const total = cart.reduce((s, i) => s + products[i.id].price * i.qty, 0);
-      const order = {
-        action: 'submit_order',
-        cart: cart,
-        total: total,
-        timestamp: new Date().toLocaleString('ru-RU')
-      };
-      Telegram.WebApp.sendData(JSON.stringify(order));
-      Telegram.WebApp.close();
-    };
-
-    render();
+    window.u=(i,d)=>{let c=JSON.parse(localStorage.getItem('c')||'[]'); c[i].q+=d; if(c[i].q<=0)c.splice(i,1); localStorage.setItem('c',JSON.stringify(c)); r();}
+    window.send=()=>{const c=JSON.parse(localStorage.getItem('c')||'[]'); const t=c.reduce((s,x)=>s+p[x.id].pr*x.q,0);
+      const o={a:'order',c,t,ts:new Date().toLocaleString('ru-RU')}; Telegram.WebApp.sendData(JSON.stringify(o)); Telegram.WebApp.close();}
+    r();
   </script>
 </body>
 </html>
