@@ -1,15 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Отключаем кэш для мгновенного обновления -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { margin:0; background:#111; color:white; font-family:-apple-system; padding:10px; }
-    .product { background:#222; margin:10px; border-radius:12px; overflow:hidden; }
-    .product img { width:100%; height:200px; object-fit:cover; }
-    .info { padding:15px; }
-    .price { color:#ff3b30; font-weight:bold; }
-    button { background:#007aff; color:white; border:none; padding:12px; width:100%; border-radius:8px; margin-top:10px; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 10px;
+    }
+    .product {
+      background: #222;
+      margin: 12px 0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .product img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #333;
+    }
+    .info {
+      padding: 16px;
+    }
+    .info h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .price {
+      color: #ff3b30;
+      font-weight: bold;
+      font-size: 18px;
+      margin: 8px 0;
+    }
+    button {
+      background: #007aff;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:active {
+      background: #005ecb;
+    }
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: #aaa;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -17,29 +73,46 @@
 
   <script>
     Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+
     const products = [
-      { id:1, name:"Dior Sauvage 100ml", price:8900, img:"https://i.imgur.com/abc123.jpg" },
-      { id:2, name:"Chanel No.5 50ml", price:12900, img:"https://i.imgur.com/def456.jpg" }
+      { id: 1, name: "Dior Sauvage 100ml", price: 8900, img: "https://i.imgur.com/abc123.jpg" },
+      { id: 2, name: "Chanel No.5 50ml", price: 12900, img: "https://i.imgur.com/def456.jpg" },
+      { id: 3, name: "YSL Libre 90ml", price: 10900, img: "https://i.imgur.com/ghi789.jpg" },
+      { id: 4, name: "Gucci Bloom 100ml", price: 9900, img: "https://i.imgur.com/jkl012.jpg" }
     ];
+
     const catalog = document.getElementById('catalog');
-    products.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'product';
-      div.innerHTML = `
-        <img src="${p.img}">
-        <div class="info">
-          <h3>${p.name}</h3>
-          <p class="price">${p.price} ₽</p>
-          <button onclick="add(${p.id})">В корзину</button>
-        </div>
-      `;
-      catalog.appendChild(div);
-    });
-    function add(id) {
-      let c = JSON.parse(localStorage.getItem('c')||'[]');
-      const i = c.find(x=>x.id==id); if(i) i.q++; else c.push({id,q:1});
-      localStorage.setItem('c',JSON.stringify(c));
+
+    if (products.length === 0) {
+      catalog.innerHTML = '<div class="empty">Каталог пуст</div>';
+    } else {
+      products.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="${p.img}" onerror="this.src='https://via.placeholder.com/300x200?text=Изображение+недоступно'">
+          <div class="info">
+            <h3>${p.name}</h3>
+            <p class="price">${p.price.toLocaleString()} ₽</p>
+            <button onclick="addToCart(${p.id})">В корзину</button>
+          </div>
+        `;
+        catalog.appendChild(div);
+      });
+    }
+
+    function addToCart(id) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const item = cart.find(x => x.id === id);
+      if (item) {
+        item.quantity += 1;
+      } else {
+        cart.push({ id, quantity: 1 });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
       Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      alert("Товар добавлен в корзину!");
     }
   </script>
 </body>
